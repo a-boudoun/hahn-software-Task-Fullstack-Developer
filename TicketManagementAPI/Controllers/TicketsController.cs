@@ -49,9 +49,10 @@ public class TicketsController : ControllerBase
         return CreatedAtAction(nameof(GetTicket), new { id = ticket.TicketId }, ticket);
     }
 
+//TODO: create a request dto and a response dto for every endpoint or add a global one
     // PUT: api/Tickets/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateTicket(int id, Ticket ticket)
+    public async Task<IActionResult> UpdateTicket(Guid id, Ticket ticket)
     {
         if (id != ticket.TicketId)
         {
@@ -81,7 +82,7 @@ public class TicketsController : ControllerBase
 
     // DELETE: api/Tickets/5
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteTicket(int id)
+    public async Task<IActionResult> DeleteTicket(Guid id)
     {
         var ticket = await _context.Tickets.FindAsync(id);
         if (ticket == null)
@@ -95,7 +96,7 @@ public class TicketsController : ControllerBase
         return NoContent();
     }
 
-    private bool TicketExists(int id)
+    private bool TicketExists(Guid id)
     {
         return _context.Tickets.Any(e => e.TicketId == id);
     }
