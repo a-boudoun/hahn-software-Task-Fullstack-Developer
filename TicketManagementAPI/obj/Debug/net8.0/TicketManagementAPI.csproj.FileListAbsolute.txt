@@ -109,3 +109,4 @@
 /Users/aboudoun/Desktop/assignment/TicketManagementAPI/obj/Debug/net8.0/TicketManagementAPI.pdb
 /Users/aboudoun/Desktop/assignment/TicketManagementAPI/obj/Debug/net8.0/TicketManagementAPI.genruntimeconfig.cache
 /Users/aboudoun/Desktop/assignment/TicketManagementAPI/obj/Debug/net8.0/ref/TicketManagementAPI.dll
+/Users/aboudoun/Desktop/assignment/TicketManagementAPI/obj/Debug/net8.0/TicketManagementAPI.sourcelink.json

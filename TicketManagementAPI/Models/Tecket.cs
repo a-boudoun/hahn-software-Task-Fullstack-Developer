@@ -2,10 +2,16 @@ namespace TicketManagementAPI.Models
 {
     public class Ticket
     {
-        public int TicketId { get; set; }
+        public Guid TicketId { get; set; }
         public string Description { get; set; }
-        //TODO: make this an enum
-        public string Status { get; set; } // "Open" or "Closed"
+        public TicketStatus Status { get; set; } //TODO: force this to be an enum in the database
         public DateTime Date { get; set; }
     }
+
+    public enum TicketStatus{
+        OPEN,
+        CLOSED
+    }
 }
+
+
