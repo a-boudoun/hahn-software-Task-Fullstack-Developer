@@ -8,5 +8,15 @@ namespace TicketManagementAPI.Data
         public TicketsDbContext(DbContextOptions<TicketsDbContext> options) : base(options) { }
 
         public DbSet<Ticket> Tickets { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Configure TicketStatus to be stored as a string
+            modelBuilder.Entity<Ticket>()
+                .Property(t => t.Status)
+                .HasConversion<string>();
+
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }
