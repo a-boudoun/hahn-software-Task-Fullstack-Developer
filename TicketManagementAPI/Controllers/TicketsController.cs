@@ -63,6 +63,8 @@ public class TicketsController : ControllerBase
 
         try
         {
+            // TODO create a repository and add these functions to it
+            //TODO create a service and add the logic to it
             await _context.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException)
