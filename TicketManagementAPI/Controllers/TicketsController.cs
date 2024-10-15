@@ -1,105 +1,74 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TicketManagementAPI.Data;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using TicketManagementAPI.Models;
+using TicketManagementAPI.Services;
 
 [ApiController]
 [Route("api/[controller]")]
 public class TicketsController : ControllerBase
 {
-    private readonly TicketsDbContext _context;
+    private readonly ITicketService _ticketService;
 
-    public TicketsController(TicketsDbContext context)
+    public TicketsController(ITicketService ticketService)
     {
-        _context = context;
+        _ticketService = ticketService;
     }
 
     // GET: api/Tickets
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Ticket>>> GetTickets(int page = 1, int pageSize = 10)
     {
-        return await _context.Tickets
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
-    }
+        var tickets = await _ticketService.GetAllTicketsAsync(page, pageSize);
+        var totalCount = await _ticketService.GetTotalCountAsync();
 
-    // GET: api/Tickets/5
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Ticket>> GetTicket(int id)
-    {
-        var ticket = await _context.Tickets.FindAsync(id);
-
-        if (ticket == null)
+        return Ok(new
         {
-            return NotFound();
-        }
-
-        return ticket;
+            TotalCount = totalCount,
+            PageSize = pageSize,
+            CurrentPage = page,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+            Tickets = tickets
+        });
     }
+
+   //TODO: add an endpoint for sorting
+   //TODO: add an endpoint for filltering by status.
 
     // POST: api/Tickets
     [HttpPost]
-    public async Task<ActionResult<Ticket>> CreateTicket(Ticket ticket)
+    public async Task<ActionResult<Ticket>> CreateTicket([FromBody] Ticket ticket)
     {
-        ticket.Date = DateTime.UtcNow;
-        _context.Tickets.Add(ticket);
-        await _context.SaveChangesAsync();
+        if (ticket == null)
+        {
+            return BadRequest("Ticket data is missing.");
+        }
 
-        return CreatedAtAction(nameof(GetTicket), new { id = ticket.TicketId }, ticket);
+        // Proceed with saving the ticket to the database
+        await _ticketService.AddTicketAsync(ticket);
+        return Ok("created");
     }
 
-//TODO: create a request dto and a response dto for every endpoint or add a global one
+
     // PUT: api/Tickets/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateTicket(Guid id, Ticket ticket)
+    public async Task<IActionResult> UpdateTicket(int id, Ticket ticket)
     {
         if (id != ticket.TicketId)
         {
             return BadRequest();
         }
 
-        _context.Entry(ticket).State = EntityState.Modified;
-
-        try
-        {
-            // TODO create a repository and add these functions to it
-            //TODO create a service and add the logic to it
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!TicketExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
-        }
-
+        await _ticketService.UpdateTicketAsync(ticket);
         return NoContent();
     }
 
     // DELETE: api/Tickets/5
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteTicket(Guid id)
+    public async Task<IActionResult> DeleteTicket(int id)
     {
-        var ticket = await _context.Tickets.FindAsync(id);
-        if (ticket == null)
-        {
-            return NotFound();
-        }
-
-        _context.Tickets.Remove(ticket);
-        await _context.SaveChangesAsync();
-
+        await _ticketService.DeleteTicketAsync(id);
         return NoContent();
-    }
-
-    private bool TicketExists(Guid id)
-    {
-        return _context.Tickets.Any(e => e.TicketId == id);
     }
 }

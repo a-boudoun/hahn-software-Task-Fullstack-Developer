@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TicketManagementAPI.Configurations;
 using TicketManagementAPI.Models;
 
 namespace TicketManagementAPI.Data
@@ -11,10 +12,7 @@ namespace TicketManagementAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configure TicketStatus to be stored as a string
-            modelBuilder.Entity<Ticket>()
-                .Property(t => t.Status)
-                .HasConversion<string>();
+            modelBuilder.ApplyConfiguration(new TicketConfig());
 
             base.OnModelCreating(modelBuilder);
         }
