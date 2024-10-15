@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TicketManagementAPI.Data;
@@ -12,11 +11,9 @@ using TicketManagementAPI.Data;
 namespace TicketManagementAPI.Migrations
 {
     [DbContext(typeof(TicketsDbContext))]
-    [Migration("20241014201424_ChangeTicketStatusToString")]
-    partial class ChangeTicketStatusToString
+    partial class TicketsDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,9 +24,11 @@ namespace TicketManagementAPI.Migrations
 
             modelBuilder.Entity("TicketManagementAPI.Models.Ticket", b =>
                 {
-                    b.Property<Guid>("TicketId")
+                    b.Property<int>("TicketId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TicketId"));
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");

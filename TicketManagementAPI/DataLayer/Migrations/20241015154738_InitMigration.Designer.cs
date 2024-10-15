@@ -12,8 +12,8 @@ using TicketManagementAPI.Data;
 namespace TicketManagementAPI.Migrations
 {
     [DbContext(typeof(TicketsDbContext))]
-    [Migration("20241014184327_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241015154738_InitMigration")]
+    partial class InitMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,9 +27,11 @@ namespace TicketManagementAPI.Migrations
 
             modelBuilder.Entity("TicketManagementAPI.Models.Ticket", b =>
                 {
-                    b.Property<Guid>("TicketId")
+                    b.Property<int>("TicketId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TicketId"));
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
@@ -38,8 +40,9 @@ namespace TicketManagementAPI.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("TicketId");
 

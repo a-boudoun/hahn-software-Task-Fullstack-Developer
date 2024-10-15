@@ -2,9 +2,9 @@ namespace TicketManagementAPI.Models
 {
     public class Ticket
     {
-        public Guid TicketId { get; set; }
+        public int TicketId { get; set; }
         public string Description { get; set; }
-        public TicketStatus Status { get; set; } //TODO: force this to be an enum in the database
+        public TicketStatus Status { get; set; }
         public DateTime Date { get; set; }
     }
 
