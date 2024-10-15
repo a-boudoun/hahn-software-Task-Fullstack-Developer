@@ -2,10 +2,18 @@ using Microsoft.EntityFrameworkCore;
 using TicketManagementAPI.Data;
 using TicketManagementAPI.Repositories;
 using TicketManagementAPI.Services;
+using Microsoft.AspNetCore.Cors;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        builder => builder.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader());
+});
 // Add services to the container.
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -27,6 +35,7 @@ var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseCors("AllowAllOrigins");
 
 app.UseHttpsRedirection();
 
@@ -35,3 +44,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+

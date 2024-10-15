@@ -2,11 +2,11 @@ using TicketManagementAPI.Models;
 
 namespace TicketManagementAPI.Requests{
 
-    public class CreateTicketRequest{
+    public class CreateOrUpdateTicketRequest{
 
-        public string Description;
+        public string Description {get; set;}
 
-        public TicketStatus status;
-        
+        public TicketStatus Status {get; set;}
+
     }
 }
