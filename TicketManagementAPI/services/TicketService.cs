@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using TicketManagementAPI.Models;
 using TicketManagementAPI.Repositories;
+using TicketManagementAPI.Responses;
 
 namespace TicketManagementAPI.Services
 {
@@ -15,19 +13,51 @@ namespace TicketManagementAPI.Services
             _ticketRepository = ticketRepository;
         }
 
-        public async Task<IEnumerable<Ticket>> GetAllTicketsAsync(int page, int pageSize)
+        public async Task<GetTicketsPagedResponse> GetAllTicketsAsync(int page, int pageSize, string? status)
         {
-            return await _ticketRepository.GetAllTicketsAsync(page, pageSize);
+            var totalCount = await GetTotalCountAsync();
+            var tickets = await _ticketRepository.GetAllTicketsAsync(page, pageSize, status);
+            var result = new GetTicketsPagedResponse
+            {
+                TotalCount = totalCount,
+                PageSize = pageSize,
+                CurrentPage = page,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+                Tickets = tickets.Select(t => new GetTicketResponse
+                {
+                    TicketId = t.TicketId,
+                    Description = t.Description,
+                    Status = t.Status,
+                    Date = t.Date
+                })
+            };
+            return result;
         }
 
-        public async Task AddTicketAsync(Ticket ticket)
+        public async Task<GetTicketResponse> AddTicketAsync(Ticket ticket)
         {
             await _ticketRepository.AddTicketAsync(ticket);
+            
+            var response = new GetTicketResponse
+            {
+                TicketId = ticket.TicketId,
+                Description = ticket.Description,
+                Status = ticket.Status,
+                Date = ticket.Date
+            };
+
+            return response;
         }
 
-        public async Task UpdateTicketAsync(Ticket ticket)
+        public async Task UpdateTicketAsync(int id, string description, TicketStatus status)
         {
-            await _ticketRepository.UpdateTicketAsync(ticket);
+            var ticket = await _ticketRepository.GetTicketByIdAsync(id);
+            if (ticket != null)
+            {
+                ticket.Description = description;
+                ticket.Status = status;
+                await _ticketRepository.UpdateTicketAsync(ticket);
+            }
         }
 
         public async Task DeleteTicketAsync(int ticketId)

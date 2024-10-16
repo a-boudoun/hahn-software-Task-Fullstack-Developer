@@ -6,6 +6,7 @@ using TicketManagementAPI.Models;
 using TicketManagementAPI.Services;
 using TicketManagementAPI.Requests;
 using TicketManagementAPI.Responses;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -19,27 +20,10 @@ public class TicketsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<GetTicketsPagedResponse>> GetTickets([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<ActionResult<GetTicketsPagedResponse>> GetTickets([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? status = null )
     {
-        var tickets = await _ticketService.GetAllTicketsAsync(page, pageSize);
-        var totalCount = await _ticketService.GetTotalCountAsync();
-
-        var response = new GetTicketsPagedResponse
-        {
-            TotalCount = totalCount,
-            PageSize = pageSize,
-            CurrentPage = page,
-            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
-            Tickets = tickets.Select(t => new GetTicketResponse
-            {
-                TicketId = t.TicketId,
-                Description = t.Description,
-                Status = t.Status,
-                Date = t.Date
-            })
-        };
-
-        return Ok(response);
+        var ticketsPaged = await _ticketService.GetAllTicketsAsync(page, pageSize, status);
+        return Ok(ticketsPaged);
     }
 
   
@@ -47,6 +31,11 @@ public class TicketsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<GetTicketResponse>> CreateTicket([FromBody] CreateOrUpdateTicketRequest request)
     {
+        if (request == null)
+        {
+            return BadRequest("Error while creating a new ticket");
+        }
+
         var ticket = new Ticket
         {
             Description = request.Description,
@@ -54,15 +43,7 @@ public class TicketsController : ControllerBase
             Date = DateTime.UtcNow
         };
 
-        await _ticketService.AddTicketAsync(ticket);
-
-        var response = new GetTicketResponse
-        {
-            TicketId = ticket.TicketId,
-            Description = ticket.Description,
-            Status = ticket.Status,
-            Date = ticket.Date
-        };
+        var response = await _ticketService.AddTicketAsync(ticket);
 
         return Ok(response);
     }
@@ -70,25 +51,20 @@ public class TicketsController : ControllerBase
 
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateTicket([FromRoute] int id, [FromBody] CreateOrUpdateTicketRequest request)
+    public async Task<ActionResult> UpdateTicket([FromRoute] int id, [FromBody] CreateOrUpdateTicketRequest request)
     {
-        var ticket = new Ticket
+        if (request == null)
         {
-            TicketId = id,
-            Description = request.Description,
-            Status = request.Status,
-        };
-        await _ticketService.UpdateTicketAsync(ticket);
+            return BadRequest("Error while updating the ticket");
+        }
+        await _ticketService.UpdateTicketAsync(id, request.Description, request.Status);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteTicket([FromRoute] int id)
+    public async Task<ActionResult> DeleteTicket([FromRoute] int id)
     {
         await _ticketService.DeleteTicketAsync(id);
         return NoContent();
     }
 }
-
- //TODO: add an endpoint for sorting
-//TODO: add an endpoint for filltering by status.

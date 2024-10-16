@@ -17,12 +17,19 @@ namespace TicketManagementAPI.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Ticket>> GetAllTicketsAsync(int page, int pageSize)
+        public async Task<IEnumerable<Ticket>> GetAllTicketsAsync(int page, int pageSize, string? status)
         {
-            return await _context.Tickets
+            var query =  _context.Tickets
                 .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+                .Take(pageSize);
+            if (status != null)
+            {
+                if (Enum.TryParse<TicketStatus>(status, true, out var ticketStatus))
+                {
+                    query = query.Where(t => t.Status == ticketStatus);
+                }
+            }
+            return await query.ToListAsync();
         }
 
         public async Task<Ticket> GetTicketByIdAsync(int ticketId)

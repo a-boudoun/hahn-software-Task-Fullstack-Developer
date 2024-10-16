@@ -14,11 +14,10 @@ builder.Services.AddCors(options =>
                           .AllowAnyMethod()
                           .AllowAnyHeader());
 });
-// Add services to the container.
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        // Configure JSON serialization to use string representation for enums
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
 builder.Services.AddDbContext<TicketsDbContext>(options =>
