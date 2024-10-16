@@ -7,7 +7,7 @@ namespace TicketManagementAPI.Repositories
 {
     public interface ITicketRepository
     {
-        Task<IEnumerable<Ticket>> GetAllTicketsAsync(int page, int pageSize);
+        Task<IEnumerable<Ticket>> GetAllTicketsAsync(int page, int pageSize, string? status);
         Task<Ticket> GetTicketByIdAsync(int ticketId);
         Task AddTicketAsync(Ticket ticket);
         Task UpdateTicketAsync(Ticket ticket);

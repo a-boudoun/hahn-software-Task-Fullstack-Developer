@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ./TicketManagementAPI
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+    environment:
+      # - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=TicketManagementDB;Username=abderrahim;Password=abderrahim13
+    depends_on:
+      - db
+
+  ui:
+    build:
+      context: ./ticket-management-ui
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=ticketmanagement
+      - POSTGRES_USER=ticketuser
+      - POSTGRES_PASSWORD=ticketpassword
+    # volumes:
+    #   - postgres_data:/var/lib/postgresql/data
+
+# volumes:
+#   postgres_data:
