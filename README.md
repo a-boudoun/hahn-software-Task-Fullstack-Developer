@@ -1,1 +1,1 @@
-# hahn-software-Task-Fullstack-Developer-.NET-m-f-
+This repository contains a Ticket Management System with a frontend (React) and backend (.NET 8) for managing support tickets.
