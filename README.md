@@ -28,7 +28,7 @@ This repository contains a Ticket Management System with a frontend (React) and 
 1. **Clone the Repository**
 
    ```bash
-   git clone git@github.com:a-boudoun/hahn-software-Task-Fullstack-Developer-.NET-m-f-.git ticket-management-system
+   git clone git@github.com:a-boudoun/hahn-software-Task-Fullstack-Developer.git ticket-management-system
    cd ticket-management-system
    docker-compose up --build
 
