@@ -1,18 +1,29 @@
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
-WORKDIR /app
-EXPOSE 80
+FROM debian:buster
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WORKDIR /src
-COPY ["TicketManagementAPI.csproj", "./"]
-RUN dotnet restore "TicketManagementAPI.csproj"
+RUN apt-get update && \
+    apt-get install -y wget 
+
+RUN wget https://packages.microsoft.com/config/debian/10/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
+    dpkg -i packages-microsoft-prod.deb && \
+    apt-get update && \
+    apt-get install -y dotnet-sdk-8.0
+
+RUN dotnet tool install --global dotnet-ef
+
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+WORKDIR /app
+
+COPY ["TicketManagementAPI.csproj", "/app/"]
+
+RUN dotnet restore
+
 COPY . .
-RUN dotnet build "TicketManagementAPI.csproj" -c Release -o /app/build
 
-FROM build AS publish
-RUN dotnet publish "TicketManagementAPI.csproj" -c Release -o /app/publish
+RUN dotnet publish -c Release -o out
 
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "TicketManagementAPI.dll"]
+RUN chmod +x /app/script.sh
+
+EXPOSE 5000
+
+ENTRYPOINT ["bash", "script.sh"]
