@@ -25,12 +25,32 @@ This repository contains a Ticket Management System with a frontend (React) and 
 
 ## Clone and Run the Application
 
+## Clone and Run the Application
+
 1. **Clone the Repository**
+
+   First, you need to clone the repository to your local machine. Run the following command in your terminal:
 
    ```bash
    git clone https://github.com/a-boudoun/hahn-software-Task-Fullstack-Developer.git ticket-management-system
    cd ticket-management-system
-   docker-compose up --build
+   ```
+
+2. **Run the Application with Docker Compose**
+
+   Depending on the version of Docker Compose installed on your machine, use one of the following commands to build and start the application:
+
+   - If you are using Docker Compose V1, run:
+
+     ```bash
+     docker-compose up --build
+     ```
+
+   - If you are using Docker Compose V2, run:
+
+     ```bash
+     docker compose up --build
+     ```
 
 2. **Accessing the Application**
 
