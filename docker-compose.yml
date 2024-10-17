@@ -1,35 +1,38 @@
 version: '3.8'
 
 services:
-  api:
+  database:
+    build:
+      context: ./Database
+      dockerfile: Dockerfile
+    environment:
+      - POSTGRES_USER=abderrahim
+      - POSTGRES_PASSWORD=abderrahim13
+      - POSTGRES_DB=TicketManagementDB
+
+    ports:
+      - "5432:5432"
+
+
+  backend:
     build:
       context: ./TicketManagementAPI
       dockerfile: Dockerfile
-    ports:
-      - "5000:80"
     environment:
-      # - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=TicketManagementDB;Username=abderrahim;Password=abderrahim13
+      - ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=TicketManagementDB;Username=abderrahim;Password=abderrahim13
+    ports:
+      - "5000:5000"
     depends_on:
-      - db
+      - database
 
-  ui:
+  frontend:
     build:
       context: ./ticket-management-ui
       dockerfile: Dockerfile
-    ports:
-      - "3000:80"
-    depends_on:
-      - api
-
-  db:
-    image: postgres:13
     environment:
-      - POSTGRES_DB=ticketmanagement
-      - POSTGRES_USER=ticketuser
-      - POSTGRES_PASSWORD=ticketpassword
-    # volumes:
-    #   - postgres_data:/var/lib/postgresql/data
+      - REACT_APP_API_URL=http://localhost:5000/api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
 
-# volumes:
-#   postgres_data:
